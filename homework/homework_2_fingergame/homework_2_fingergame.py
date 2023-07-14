@@ -12,7 +12,6 @@ def RT_show_txt(scr, txt, font, x, y, c):
     return
 
 def RT_count_finger(pNum, cNum):
-    print(pNum, cNum)
     if (pNum - cNum) % 5 == 1:
         return 1, 0
     if (cNum - pNum) % 5 == 1:
@@ -26,6 +25,11 @@ clock = pygame.time.Clock()
 bgImg = pygame.image.load('background.jpg')
 font = pygame.font.Font('simkai.ttf', 64)
 
+soundList = []
+for note in 'cdefg':
+    oggsound = pygame.mixer.Sound(note + '4.ogg')
+    soundList.append(oggsound)
+
 fgLeftList = []
 fgRightList = []
 for i in range(5):
@@ -38,6 +42,7 @@ for i in range(5):
 
 pScore, cScore = 0, 0
 sysStatus = 0
+easyMode = 0
 while True:
     cNum = random.randint(0,4)
     pNum = random.randint(0,4)
@@ -46,7 +51,12 @@ while True:
             #print(event.key)
             if ord('1') <= event.key <= ord('5'):
                 pNum = event.key - ord('1')
+                soundList[pNum].play()
                 sysStatus = 1
+            elif event.key == ord('6'):
+                sysStatus = 1
+            elif event.key == ord('0'):
+                easyMode = 1 - easyMode
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()   
@@ -56,6 +66,16 @@ while True:
     screen.blit(fgRightList[cNum], (RIGHT_FINGER_X, FINGER_Y))
 
     if sysStatus == 1:
+        if easyMode == 1:
+            cNum = pNum - 1 + (pNum == 0) * 5
+            print('--------')
+            print(pNum, cNum)
+        for i in range(10,0,-1):
+            screen.blit(bgImg, (0,0))
+            screen.blit(fgLeftList[pNum], (LEFT_FINGER_X - i * 10, FINGER_Y))
+            screen.blit(fgRightList[cNum], (RIGHT_FINGER_X + i * 10, FINGER_Y))
+            pygame.display.update()
+            clock.tick(20)
         p, c = RT_count_finger(pNum, cNum)
         pScore += p
         cScore += c
