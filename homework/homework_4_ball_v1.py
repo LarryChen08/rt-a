@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, random
 SCREEN_W, SCREEN_H = 1024, 600
 
 def RT_draw(screen, pixel, x0, y0, scale):
