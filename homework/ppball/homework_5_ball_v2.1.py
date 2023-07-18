@@ -71,6 +71,7 @@ class CLS_ball(object):
         self.out()
         self.collide(paddle1)
         self.collide(paddle2)
+        self.collide(net)
     def draw(self, scr):
         RT_draw(scr, self.picList[int(self.counter) // self.interval % len(self.picList)], self.x, self.y, self.scale)
         self.counter += self.spdX * 0.25
@@ -79,10 +80,12 @@ class CLS_ball(object):
         if self.x > SCREEN_W:
             paddle1.score += 1
             gameStatus = 1
+            time.sleep(1)
             set_new_ball(ball)
         elif self.x + self.w< 0:
             paddle2.score += 1
             gameStatus = 1
+            time.sleep(1)
             set_new_ball(ball)
     def collide(self, pad):
         if self.spdX < 0:
@@ -91,6 +94,15 @@ class CLS_ball(object):
             distance = abs(self.x + self.w - pad.x)
         if distance <= ACCURACY:
             if pad.y <= self.y + self.h//2 <= pad.y + pad.h:
+                if pad == net:
+                    if self.spdX < 0:
+                        paddle1.score += 1
+                        time.sleep(1)
+                        set_new_ball(ball)
+                    else:
+                        paddle2.score += 1
+                        time.sleep(1)
+                        set_new_ball(ball)
                 self.spdX *= -1
                 self.spdY += pad.spdY * pad.friction
                 self.accY = -pad.spdY * pad.friction * 0.01
@@ -140,6 +152,7 @@ font64 = pygame.font.Font('simkai.ttf', 64)
 ball = CLS_ball(10,10,2,2,3)
 paddle1 = CLS_paddle(SCREEN_W - BORDER_W, 200, 10, 150)
 paddle2 = CLS_paddle(0, 200, 10, 150)
+net = CLS_paddle(SCREEN_W//2-5,SCREEN_H//2,10,SCREEN_H//2-BORDER_W)
 
 
 pixel = ['....DD....',
@@ -237,6 +250,7 @@ while True:
     paddle1.draw(screen)
     paddle2.move()
     paddle2.draw(screen)
+    net.draw(screen)
     pygame.display.update()
     clock.tick(200)
 
